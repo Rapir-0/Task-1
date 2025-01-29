@@ -2,6 +2,9 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+import lombok.extern.slf4j.Slf4j;
+
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,70 +12,63 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class UserDaoJDBCImpl implements UserDao {
     public UserDaoJDBCImpl() {
-
     }
+
     private final Connection connection = Util.getConnection();
+    SQLQueries sqlQueries = new SQLQueries();
 
     @Override
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users (" +
-                "id SERIAL PRIMARY KEY, " +
-                "name VARCHAR(50), " +
-                "last_name VARCHAR(50), " +
-                "age SMALLINT)";
         try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-            System.out.println("Таблица создана");
+            statement.execute(sqlQueries.CREATE_USERS_TABLE);
+            log.info("Таблица создана");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка создания таблицы", e);
         }
     }
 
     @Override
     public void dropUsersTable() {
-        String sql = "DROP TABLE IF EXISTS users";
-        try(Statement statement = connection.createStatement()){
-            statement.execute(sql);
-            System.out.println("Таблица удалена");
-        }catch (Exception e){
-            e.printStackTrace();
+        try (Statement statement = connection.createStatement()) {
+            statement.execute(sqlQueries.DROP_USERS_TABLE);
+            log.info("Таблица удалена");
+        } catch (Exception e) {
+            log.error("Ошибка удаления таблицы", e);
         }
     }
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO users (name, last_name, age) VALUES (?, ?, ?)";
-        try(PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            preparedStatement.setString(1,name);
-            preparedStatement.setString(2,lastName);
-            preparedStatement.setByte(3,age);
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQueries.INSERT_USER)) {
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, lastName);
+            preparedStatement.setByte(3, age);
             preparedStatement.executeUpdate();
-            System.out.println("User с именем: " + name + " добавлен");
-        }catch (Exception e){
-            e.printStackTrace();
+            log.info("User с именем {} добавлен", name);
+        } catch (Exception e) {
+            log.error("Ошибка добавления пользователя с именем {}", name, e);
         }
     }
 
     @Override
     public void removeUserById(long id) {
-        String sql = "DELETE FROM users WHERE id = ?";
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sqlQueries.DELETE_USER_BY_ID)) {
             preparedStatement.setLong(1, id);
             preparedStatement.executeUpdate();
-            System.out.println("User с ID " + id + " удалён");
+            log.info("User с ID {} удалён", id);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка удаления пользователя с ID {}", id, e);
         }
     }
 
     @Override
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT * FROM users";
         try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+             ResultSet resultSet = statement.executeQuery(sqlQueries.SELECT_ALL_USERS)) {
             while (resultSet.next()) {
                 User user = new User(resultSet.getString("name"),
                         resultSet.getString("last_name"),
@@ -80,20 +76,20 @@ public class UserDaoJDBCImpl implements UserDao {
                 user.setId(resultSet.getLong("id"));
                 users.add(user);
             }
+            log.info("Получен список всех пользователей: {}", users);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка получения списка пользователей", e);
         }
         return users;
     }
 
     @Override
     public void cleanUsersTable() {
-        String sql = "TRUNCATE TABLE users";
         try (Statement statement = connection.createStatement()) {
-            statement.execute(sql);
-            System.out.println("Таблица очищена");
+            statement.execute(sqlQueries.TRUNCATE_USERS_TABLE);
+            log.info("Таблица очищена");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Ошибка очистки таблицы", e);
         }
     }
 }
