@@ -1,6 +1,6 @@
 package jm.task.core.jdbc.dao;
 
-//класс с запросами
+//Класс с запросами
 public class SQLQueries {
     public static final String CREATE_USERS_TABLE = "CREATE TABLE IF NOT EXISTS users (" +
             "id SERIAL PRIMARY KEY, " +
