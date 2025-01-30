@@ -2,6 +2,7 @@ package jm.task.core.jdbc.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Id;
@@ -10,6 +11,7 @@ import javax.persistence.Table;
 @Setter
 @Getter
 @Table
+@ToString
 public class User {
     @Id
     private Long id;
@@ -31,15 +33,5 @@ public class User {
         this.name = name;
         this.lastName = lastName;
         this.age = age;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", имя='" + name + '\'' +
-                ", фамилия='" + lastName + '\'' +
-                ", возраст=" + age +
-                '}';
     }
 }

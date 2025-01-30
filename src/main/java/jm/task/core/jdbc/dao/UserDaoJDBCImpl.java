@@ -2,6 +2,8 @@ package jm.task.core.jdbc.dao;
 
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -13,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
+@NoArgsConstructor
+@RequiredArgsConstructor
 public class UserDaoJDBCImpl implements UserDao {
-    public UserDaoJDBCImpl() {
-    }
 
     private final Connection connection = Util.getConnection();
-    SQLQueries sqlQueries = new SQLQueries();
+    private final SQLQueries sqlQueries = new SQLQueries();
 
     @Override
     public void createUsersTable() {
