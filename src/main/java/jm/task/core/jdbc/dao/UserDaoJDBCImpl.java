@@ -16,7 +16,6 @@ import java.util.List;
 
 @Slf4j
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class UserDaoJDBCImpl implements UserDao {
 
     private final Connection connection = Util.getConnection();
